@@ -1,33 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
-</head>
-<body>
-    <h1>Results for "{{ query }}"</h1>
-    
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center mb-4">Results for "{{ query }}"</h1>
+
+
     {% if articles %}
-        <ul>
+        <div class="list-group">
         {% for article in articles %}
-            <li>
-                <h2><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h2>
+            <div class="list-group-item">
+                <h3><a href="{{ article.url }}" target="_blank" class="text-primary">{{ article.title }}</a></h3>
                 <p><strong>Source:</strong> {{ article.source.name }}</p>
                 <p><strong>Published At:</strong> {{ article.publishedAt }}</p>
                 <p><strong>Description:</strong> {{ article.description }}</p>
-                
+
                 {% if article.urlToImage %}
-                    <img src="{{ article.urlToImage }}" alt="Article Image" style="width: 300px;">
+                    <img src="{{ article.urlToImage }}" alt="Article Image" class="img-fluid mb-2" style="max-width: 100%; height: auto;">
                 {% endif %}
-            </li>
+            </div>
         {% endfor %}
-        </ul>
+        </div>
     {% else %}
         <p>No results found.</p>
     {% endif %}
-    
-    <br>
-    <a href="/">Back to Search</a>
-</body>
-</html>
+{% endblock %}

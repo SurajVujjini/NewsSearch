@@ -1,22 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Search</title>
-</head>
-<body>
-    <h1>Search News</h1>
-    
-    <!-- Search Form -->
-    <form action="/search" method="POST">
-        <input type="text" name="query" placeholder="Search for news" required>
-        <button type="submit">Search</button>
-    </form>
+{% extends "base.html" %}
 
+{% block content %}
+    <h1 class="text-center mb-4">Search News Articles</h1>
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
     {% endif %}
-
-</body>
-</html>
+{% endblock %}
