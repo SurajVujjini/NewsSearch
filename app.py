@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Function to fetch and process news data
 def fetch_news(query):
     api_key = '2fb64be320a6418ca18285ec3a48c032'
-    url = f'https://newsapi.org/v2/everything?q={query}&sortBy=popularity&apiKey={api_key}&language=en'
+    url = f'https://newsapi.org/v2/everything?q={query}&sortBy=popularity&searchin=title&apiKey={api_key}&language=en'
     response = requests.get(url)
     print(response.json())
     return response.json()
