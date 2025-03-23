@@ -42,8 +42,20 @@
             color: #1a237e;
         }
         .news-meta {
-            font-size: 0.875rem;
-            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .news-source {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1976d2;
+            text-transform: uppercase;
+        }
+        .news-date {
+            font-size: 0.85rem;
+            color: #757575;
+            font-style: italic;
         }
         .news-description {
             color: #424242;
@@ -70,8 +82,8 @@
                                 <a href="{{ article.url }}" target="_blank" class="text-decoration-none">{{ article.title }}</a>
                             </h3>
                             <div class="news-meta mb-3">
-                                <span class="me-3">{{ article.source.name }}</span>
-                                <span>{{ article.publishedAt }}</span>
+                                <span class="news-source">{{ article.source.name }}</span>
+                                <span class="news-date">{{ article.publishedAt | format_time }}</span>
                             </div>
                             <p class="news-description mb-0">{{ article.description }}</p>
                         </div>
