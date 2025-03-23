@@ -10,13 +10,19 @@
 <body>
 
 <!-- Navbar with Search Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="/">News Search</a>
-    <form action="/search" method="POST" class="form-inline ml-auto">
-      <input type="text" name="query" class="form-control mr-2" placeholder="Search for news" required>
-      <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
-    </form>
+    <div class="w-100">
+      <a class="navbar-brand text-center d-block mb-3" href="/">SEARCH</a>
+      <form action="/search" method="POST">
+        <div class="input-group">
+          <input type="text" name="query" class="form-control" placeholder="What news do you want to search for?" required>
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </nav>
 
