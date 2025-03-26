@@ -45,22 +45,40 @@ def fetch_news(query):
     print(response.json())
     return response.json()
 
+def get_paginated_articles(articles, page, per_page=15):
+    start = (page - 1) * per_page
+    end = start + per_page
+    return articles[start:end]
+
 # Route to display the homepage with the search bar
 @app.route('/')
 def home():
     return render_template('index.html')
 
 # Route to handle the search form submission
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['POST', 'GET'])
 def search():
-    search_query = request.form.get('query')
+    search_query = request.form.get('query') or request.args.get('query')
+    page = request.args.get('page', 1, type=int)
+    
     if not search_query:
         return render_template('index.html', error="Please enter a search query.")
     
     data = fetch_news(search_query)
-    articles = data.get('articles', [])
+    all_articles = data.get('articles', [])
     
-    return render_template('results.html', query=search_query, articles=articles)
+    # Calculate pagination
+    total_articles = len(all_articles)
+    total_pages = (total_articles + 29) // 30  # ceiling division) 
+    
+    # Get articles for current page
+    articles = get_paginated_articles(all_articles, page)
+    
+    return render_template('results.html', 
+                         query=search_query, 
+                         articles=articles,
+                         current_page=page,
+                         total_pages=total_pages)
 
 # Start the Flask web server
 if __name__ == '__main__':
