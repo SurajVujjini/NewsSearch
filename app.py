@@ -1,17 +1,33 @@
 import requests
 from PIL import Image
 from io import BytesIO
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime
 import pytz
 import os
 from dotenv import load_dotenv
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+import logging
 
+# Setup logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
+CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+
+# Validate environment variables
+if not CLIENT_ID:
+    raise ValueError("GOOGLE_CLIENT_ID environment variable is not set")
+if not app.secret_key:
+    raise ValueError("FLASK_SECRET_KEY environment variable is not set")
+
+logger.debug(f"Initialized with CLIENT_ID: {CLIENT_ID[:10]}...")
 
 @app.template_filter('format_time')
 def format_time(date_str):
@@ -79,6 +95,44 @@ def search():
                          articles=articles,
                          current_page=page,
                          total_pages=total_pages)
+
+@app.route('/auth', methods=['POST'])
+def auth():
+    token = request.json.get('credential')
+    if not token:
+        logger.error("No token provided in request")
+        return jsonify({'success': False, 'error': 'No token provided'}), 400
+        
+    try:
+        logger.debug("Attempting to verify token...")
+        idinfo = id_token.verify_oauth2_token(
+            token, 
+            google_requests.Request(), 
+            CLIENT_ID
+        )
+        
+        if idinfo['aud'] != CLIENT_ID:
+            logger.error(f"Token audience mismatch. Expected {CLIENT_ID}, got {idinfo['aud']}")
+            return jsonify({'success': False, 'error': 'Invalid client ID'}), 401
+        
+        logger.debug("Token verified successfully")
+        session['user'] = {
+            'email': idinfo['email'],
+            'name': idinfo['name'],
+            'picture': idinfo['picture']
+        }
+        return jsonify({'success': True})
+    except ValueError as e:
+        logger.error(f"Token verification failed: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 401
+    except Exception as e:
+        logger.error(f"Unexpected error during authentication: {str(e)}")
+        return jsonify({'success': False, 'error': 'Authentication failed'}), 500
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user', None)
+    return jsonify({'success': True})
 
 # Start the Flask web server
 if __name__ == '__main__':
